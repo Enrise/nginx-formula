@@ -1,0 +1,10 @@
+{% set nginx = salt['grains.filter_by']({
+    'Debian': {
+        'dirs': {
+          'config': '/etc/nginx',
+          'sites_enabled': '/etc/nginx/sites-enabled',
+          'sites_available': '/etc/nginx/sites-available',
+        },
+
+    },
+}, merge=salt['pillar.get']('nginx:lookup'), default='Debian') %}

@@ -1,0 +1,23 @@
+nginx:
+  # Nginx config
+  config:
+    # Remove existing configs
+    cleanup: True
+
+    # Generate sites-available/sites-enabled structure
+    sites_enabled: True
+
+    # Install security.conf which adds default security features to NGINX
+    security: True
+
+  # Install a placeholder as default vhost
+  placeholder:
+    install: True
+    template: 'salt://web/templates/placeholder.html.jinja'
+    template_type: jinja
+    config_template: 'salt://nginx/templates/default.conf.jinja'
+
+    # SSL for placeholder. The certificate/key is not being managed by this formula.
+    enable_ssl: True
+    ssl_certificate: 'wildcard.example.com.crt'
+    ssl_key: 'wildcard.example.com.key'

@@ -1,0 +1,91 @@
+## File managed by Salt.
+server {
+  # Listen non-SSL (default '{{ default_server|default(False) }}')
+  {%- if listen_ip is defined %}
+  {%- set listen_ip = listen_ip ~ ':' %}
+  {%- endif %}
+  listen {{ listen_ip|default('') }}{{ listen_port|default('80') }} {{ 'default_server' if default_server|default(False) else '' }};
+
+  {%- if ssl is defined and ssl is mapping %}
+  # Listen on SSL
+  {%- if listen_ip_ssl is defined %}
+  {%- set listen_ip_ssl = listen_ip_ssl ~ ':' %}
+  {%- endif %}
+  listen {{ listen_ip_ssl|default('') }}{{ listen_port_ssl|default('443') }} ssl {{ 'spdy' if ssl.spdy|default(False) else '' }} {{ 'default_server' if default_server|default(False) else '' }};
+
+  # Enable SSL
+  ssl_certificate /etc/ssl/certs/{{ ssl.cert }};
+  ssl_certificate_key /etc/ssl/private/{{ ssl.key }};
+  ssl_session_timeout 5m;
+  ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+  ssl_prefer_server_ciphers on;
+
+  {% if ssl.forward is defined and ssl.forward == True -%}
+  # Force redirect Non-SSL requests to SSL
+  if ($server_port = {{ listen_port|default('80') }}) {
+      rewrite ^ https://$host:{{ listen_port_ssl|default('443') }}$request_uri permanent;
+  }
+  {%- endif %}
+  {%- endif %}
+
+  {% if redirect_to_www is defined and redirect_to_www == True -%}
+  # non-www to www redirect
+  if ($host !~* ^www\.)
+  {
+  	rewrite  ^  $scheme://www.$host$request_uri permanent;
+  }
+  {% elif redirect_from_www is defined and redirect_from_www == True -%}
+  # www to non-www redirect
+  if ($host ~* ^www\.)
+  {
+    rewrite  ^  $scheme://$host$request_uri permanent;
+  }
+  {%- endif %}
+
+  # Webroot
+  root {{ webroot }};
+  server_name {{ domain }} www.{{ domain }} {{ aliases|default([])|join(" ") }};
+
+  location / {
+      try_files {{ try_files|default('$uri $uri/ /index.php?$args') }};
+  }
+
+  {%- if logdir is defined %}
+  access_log {{ logdir }}/{{ domain }}_access.log;
+  error_log {{ logdir }}/{{ domain }}_error.log;
+  {%- endif %}
+
+  index {{ index|default('index.php') }};
+
+  {% if php|default(true) -%}
+  # Handle PHP
+  location ~ \.php$ {
+      {%- if fastcgi_pass is defined %}
+      # Using the configured parameter
+      {%- set fastcgi_pass = fastcgi_pass %}
+      {%- else %}
+      # Use the local socket
+      {%- set fastcgi_pass = 'unix:' ~ fpm_sock_dir|default('/var/run/phpfpm') ~ '/fpm_' ~ domain_safe ~ '.sock' %}
+      {%- endif %}
+
+      fastcgi_pass {{ fastcgi_pass }};
+      fastcgi_index {{ fastcgi_index|default('index.php') }};
+
+      # Increase default buffers
+      fastcgi_buffers 16 16k;
+      fastcgi_buffer_size 32k;
+
+      # Include params
+      include fastcgi_params;
+      {{ fastcgi_params|default([])|join("\n")|indent(3) }}
+  }
+  {%- endif %}
+
+  # deny access to .htaccess files, if Apache's document root
+  # concurs with nginx's one
+  #
+  location ~ /\.ht {
+      deny all;
+  }
+  {{ extra_config|default([])|join("\n")|indent(2) }}
+}

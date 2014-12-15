@@ -1,0 +1,35 @@
+## File managed by Salt.
+server {
+  # Listen non-SSL (default)
+  {%- if listen_ip is defined %}
+  listen {{ listen_ip -}}:{{ listen_port|default('80') }};
+  {%- else %}
+  listen {{ listen_port|default('80') }};
+  {%- endif %}
+
+  {%- if ssl is defined and ssl is mapping %}
+  # Listen on SSL
+  {%- if listen_ip is defined %}
+  listen {{ listen_ip -}}:{{ listen_port_ssl|default('443') }} ssl;
+  {%- else %}
+  listen {{ listen_port_ssl|default('443') }} ssl;
+  {%- endif %}
+
+  # Enable SSL
+  ssl_certificate /etc/ssl/certs/{{ ssl.cert }};
+  ssl_certificate_key /etc/ssl/private/{{ ssl.key }};
+  ssl_session_timeout 5m;
+  ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+  ssl_prefer_server_ciphers on;
+
+  {% if ssl.forward is defined and ssl.forward == True -%}
+  # Force redirect Non-SSL requests to SSL
+  if ($server_port = {{ listen_port|default('80') }}) {
+      rewrite ^ https://$host:{{ listen_port_ssl|default('443') }}$request_uri permanent;
+  }
+  {%- endif %}
+  {%- endif %}
+
+  server_name {{ domain }} www.{{ domain }} {{ aliases|default([])|join(" ") -}};
+  return {{redirect_code|default('301')}} {{redirect_to}};
+}
