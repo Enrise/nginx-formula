@@ -46,7 +46,7 @@
 install_placeholder:
   file.managed:
     - name: /usr/share/nginx/html/index.html
-    - source: {{ salt['pillar.get']('nginx:placeholder:template', 'salt://web/placeholder.html.jinja') }}
+    - source: {{ salt['pillar.get']('nginx:placeholder:template', 'salt://nginx/templates/placeholder.html.jinja') }}
     - template: {{ salt['pillar.get']('nginx:placeholder:template_type', 'jinja') }}
     - mode: 644
 
