@@ -55,6 +55,10 @@ server {
   error_log {{ logdir }}/{{ domain }}_error.log;
   {%- endif %}
 
+  # Upload limit
+  client_max_body_size 50m;
+  client_body_buffer_size 128k;
+
   index {{ index|default('index.php') }};
 
   {% if php|default(true) -%}
@@ -71,9 +75,10 @@ server {
       fastcgi_pass {{ fastcgi_pass }};
       fastcgi_index {{ fastcgi_index|default('index.php') }};
 
-      # Increase default buffers
-      fastcgi_buffers 16 16k;
-      fastcgi_buffer_size 32k;
+      # Increase default buffers  
+      fastcgi_buffer_size 128k;
+      fastcgi_buffers 4 256k;
+      fastcgi_busy_buffers_size 256k;
 
       # Include params
       include fastcgi_params;
