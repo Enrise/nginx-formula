@@ -36,9 +36,8 @@ server {
   }
   {% elif redirect_from_www is defined and redirect_from_www == True -%}
   # www to non-www redirect
-  if ($host ~* ^www\.)
-  {
-    rewrite  ^  $scheme://$host$request_uri permanent;
+  if ( $host ~* ^www\.(?<nowww>.*)$ ) {
+    rewrite .* $scheme://$nowww$request_uri permanent;
   }
   {%- endif %}
 
@@ -75,7 +74,7 @@ server {
       fastcgi_pass {{ fastcgi_pass }};
       fastcgi_index {{ fastcgi_index|default('index.php') }};
 
-      # Increase default buffers  
+      # Increase default buffers
       fastcgi_buffer_size 128k;
       fastcgi_buffers 4 256k;
       fastcgi_busy_buffers_size 256k;
