@@ -1,4 +1,5 @@
 # Manage core configuration for Nginx
+{% from "nginx/lib.sls" import serialize %}
 {% from "nginx/map.jinja" import nginx as nginx_map with context %}
 
 # Remove default files
@@ -9,6 +10,21 @@
 {% endfor %}
 {%- endif %}
 
+################################################################################
+# Manage nginx.conf if configured, otherwise use default
+{%- if salt['pillar.get']('nginx:config:server:config_template') is defined %}
+{{ nginx_map.dirs.config }}/nginx.conf:
+  file.managed:
+  - source: {{ salt['pillar.get']('nginx:config:server:config_template') }}
+  - template: {{ salt['pillar.get']('nginx:config:server:config_template_type', 'jinja') }}
+  - watch_in:
+    - service: nginx
+  - require:
+    - pkg: nginx
+  - context:
+    http: {{ salt['pillar.get']('nginx:config:server:config:http', {}) }}
+    events: {{ salt['pillar.get']('nginx:config:server:config:events', {}) }}
+{%- endif %}
 ################################################################################
 
 # Ensure the "sites-enabled" are included
@@ -23,7 +39,7 @@
       - pkg: nginx
 {% endfor -%}
 
-{{ nginx_map.dirs.config }}/conf.d/include_sites.conf:
+{{ nginx_map.dirs.config }}/conf.d/http_include_sites.conf:
   file.managed:
     - contents: 'include {{ nginx_map.dirs.sites_enabled }}/*;'
     - require:
@@ -32,7 +48,7 @@
 
 {%- if salt['pillar.get']('nginx:config:security', True) %}
 # Lock down NGINX with a security sauce
-{{ nginx_map.dirs.config }}/conf.d/security.conf:
+{{ nginx_map.dirs.config }}/conf.d/http_security.conf:
   file.managed:
     - source: salt://nginx/files/security.conf
     - template: jinja
