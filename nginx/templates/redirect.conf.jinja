@@ -21,9 +21,6 @@ server {
   ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
   ssl_ciphers "AES256+EECDH:AES256+EDH";
   ssl_prefer_server_ciphers on;
-
-  # Cache SSL Sessions to improve performance and security
-  ssl_session_cache shared:SSL:50m;
   ssl_session_timeout 5m;
 
   {%- if ssl.prevent_frame is defined and ssl.prevent_frame == True -%}
