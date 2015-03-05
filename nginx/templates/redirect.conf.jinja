@@ -18,15 +18,32 @@ server {
   # Enable SSL
   ssl_certificate /etc/ssl/certs/{{ ssl.cert }};
   ssl_certificate_key /etc/ssl/private/{{ ssl.key }};
-  ssl_session_timeout 5m;
   ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+  ssl_ciphers "AES256+EECDH:AES256+EDH";
   ssl_prefer_server_ciphers on;
+
+  # Cache SSL Sessions to improve performance and security
+  ssl_session_cache shared:SSL:50m;
+  ssl_session_timeout 5m;
+
+  # Prevent from being loaded into an iframe
+  add_header X-Frame-Options SAMEORIGIN;
+  add_header X-Content-Type-Options nosniff;
+
+  # Enable XSS filter in modern webbrowsers
+  add_header X-XSS-Protection "1; mode=block";
 
   {% if ssl.forward is defined and ssl.forward == True -%}
   # Force redirect Non-SSL requests to SSL
   if ($server_port = {{ listen_port|default('80') }}) {
       rewrite ^ https://$host:{{ listen_port_ssl|default('443') }}$request_uri permanent;
   }
+
+  set $sts "";
+  if ($server_port = {{ listen_port_ssl|default('443') }}) {
+      set $sts "max-age=31536000; includeSubdomains;";
+  }
+  add_header Strict-Transport-Security $sts;  
   {%- endif %}
   {%- endif %}
 
