@@ -24,14 +24,16 @@ server {
   ssl_session_cache shared:SSL:50m;
   ssl_session_timeout 5m;
 
+  {%- if ssl.prevent_frame is defined and ssl.prevent_frame == True -%}
   # Prevent from being loaded into an iframe
   add_header X-Frame-Options SAMEORIGIN;
   add_header X-Content-Type-Options nosniff;
+  {%- endif %}
 
   # Enable XSS filter in modern webbrowsers
   add_header X-XSS-Protection "1; mode=block";
 
-  {% if ssl.forward is defined and ssl.forward == True -%}
+  {%- if ssl.forward is defined and ssl.forward == True -%}
   # Force redirect Non-SSL requests to SSL
   if ($server_port = {{ listen_port|default('80') }}) {
       rewrite ^ https://$host:{{ listen_port_ssl|default('443') }}$request_uri permanent;
@@ -45,7 +47,7 @@ server {
   {%- endif %}
   {%- endif %}
 
-  {% if redirect_to_www is defined and redirect_to_www == True -%}
+  {%- if redirect_to_www is defined and redirect_to_www == True -%}
   # non-www to www redirect
   if ($host !~* ^www\.)
   {
