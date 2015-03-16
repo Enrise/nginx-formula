@@ -31,17 +31,20 @@ server {
   # Enable XSS filter in modern webbrowsers
   add_header X-XSS-Protection "1; mode=block";
 
-  {%- if ssl.forward is defined and ssl.forward == True -%}
+  {%- if ssl.forward is defined and ssl.forward == True %}
   # Force redirect Non-SSL requests to SSL
   if ($server_port = {{ listen_port|default('80') }}) {
       rewrite ^ https://$host:{{ listen_port_ssl|default('443') }}$request_uri permanent;
   }
 
+  {%- if ssl.enable_sts is defined and ssl.enable_sts == True %}
   set $sts "";
   if ($server_port = {{ listen_port_ssl|default('443') }}) {
       set $sts "max-age=31536000;";
   }
   add_header Strict-Transport-Security $sts;
+  {%- endif %}
+  
   {%- endif %}
   {%- endif %}
 

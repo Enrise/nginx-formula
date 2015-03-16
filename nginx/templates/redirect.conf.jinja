@@ -24,7 +24,7 @@ server {
   ssl_session_cache shared:SSL:10m;
   ssl_session_timeout 10m;
 
-  {%- if ssl.prevent_frame is defined and ssl.prevent_frame == True -%}
+  {%- if ssl.prevent_frame is defined and ssl.prevent_frame == True %}
   # Prevent from being loaded into an iframe
   add_header X-Frame-Options SAMEORIGIN;
   add_header X-Content-Type-Options nosniff;
@@ -39,11 +39,13 @@ server {
       rewrite ^ https://$host:{{ listen_port_ssl|default('443') }}$request_uri permanent;
   }
 
+  {%- if ssl.enable_sts is defined and ssl.enable_sts == True %}
   set $sts "";
   if ($server_port = {{ listen_port_ssl|default('443') }}) {
       set $sts "max-age=31536000;";
   }
   add_header Strict-Transport-Security $sts;
+  {%- endif %}
   {%- endif %}
   {%- endif %}
 
