@@ -35,8 +35,8 @@ server {
 
   {% if ssl.forward is defined and ssl.forward == True -%}
   # Force redirect Non-SSL requests to SSL
-  if ($server_port = {{ listen_port|default('80') }}) {
-      rewrite ^ https://$host:{{ listen_port_ssl|default('443') }}$request_uri permanent;
+  if ($scheme = http) {
+      return 301 https://{{ domain }}:{{ listen_port_ssl|default('443') }}$request_uri;
   }
 
   {%- if ssl.enable_sts is defined and ssl.enable_sts == True %}

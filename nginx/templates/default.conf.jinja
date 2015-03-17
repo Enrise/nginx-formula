@@ -33,8 +33,8 @@ server {
 
   {%- if ssl.forward is defined and ssl.forward == True %}
   # Force redirect Non-SSL requests to SSL
-  if ($server_port = {{ listen_port|default('80') }}) {
-      rewrite ^ https://$host:{{ listen_port_ssl|default('443') }}$request_uri permanent;
+  if ($scheme = http) {
+      return 301 https://{{ domain }}:{{ listen_port_ssl|default('443') }}$request_uri;
   }
 
   {%- if ssl.enable_sts is defined and ssl.enable_sts == True %}
@@ -44,20 +44,20 @@ server {
   }
   add_header Strict-Transport-Security $sts;
   {%- endif %}
-  
+
   {%- endif %}
   {%- endif %}
 
   {%- if redirect_to_www is defined and redirect_to_www == True -%}
   # non-www to www redirect
-  if ($host !~* ^www\.)
+  if ($http_host !~* ^www\.)
   {
-  	rewrite  ^  $scheme://www.$host$request_uri permanent;
+  	return 301 $scheme://www.{{ domain }}$request_uri;
   }
   {% elif redirect_from_www is defined and redirect_from_www == True -%}
   # www to non-www redirect
-  if ( $host ~* ^www\.(?<nowww>.*)$ ) {
-    rewrite .* $scheme://$nowww$request_uri permanent;
+  if ($http_host ~* "^www\.(.+)$"){
+    return 301 $scheme://{{ domain }}$request_uri;
   }
   {%- endif %}
 
