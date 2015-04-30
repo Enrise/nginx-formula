@@ -56,6 +56,13 @@
       - pkg: nginx
 {%- endif %}
 
+# Fix fastcgi_params file causing issues with PHP-FPM usage
+{{ nginx_map.dirs.config }}/fastcgi_params:
+  file.append:
+    - text: "fastcgi_param  SCRIPT_FILENAME    $request_filename;"
+    - require:
+      - pkg: nginx
+
 ################################################################################
 # Install placeholder
 {%- if salt['pillar.get']('nginx:placeholder:install', True) %}
