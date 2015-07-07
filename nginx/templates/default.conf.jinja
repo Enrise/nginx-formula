@@ -88,7 +88,7 @@ server {
       {%- set fastcgi_pass = fastcgi_pass %}
       {%- else %}
       # Use the local socket
-      {%- set fastcgi_pass = 'unix:' ~ fpm_sock_dir|default('/var/run/phpfpm') ~ '/fpm_' ~ domain_safe ~ '.sock' %}
+      {%- set fastcgi_pass = 'unix:' ~ fpm_sock_dir|default('/var/run') ~ '/fpm_' ~ domain_safe ~ '.sock' %}
       {%- endif %}
 
       fastcgi_pass {{ fastcgi_pass }};
