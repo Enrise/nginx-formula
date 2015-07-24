@@ -12,7 +12,7 @@
 
 ################################################################################
 # Manage nginx.conf if configured, otherwise use default
-{%- if salt['pillar.get']('nginx:config:server:config_template') is defined %}
+{%- if salt['pillar.get']('nginx:config:server:config_template') %}
 {{ nginx_map.dirs.config }}/nginx.conf:
   file.managed:
   - source: {{ salt['pillar.get']('nginx:config:server:config_template') }}
