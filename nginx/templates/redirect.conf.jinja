@@ -24,6 +24,17 @@ server {
   ssl_session_cache shared:SSL:10m;
   ssl_session_timeout 10m;
 
+  # SSL Stapling
+  ssl_stapling on;
+  ssl_stapling_verify on;
+  resolver {{ salt['pillar.get']('nginx:config:resolvers',['8.8.8.8','8.8.4.4'])|join(' ') }} valid=300s;
+  resolver_timeout 10s;
+
+  {% if salt['pillar.get']('nginx:config:dhparam') %}
+  # Increase DH Params from default 1024 to 4096
+  ssl_dhparam /etc/ssl/private/dhparam_{{ salt['grains.get']('fqdn') }}.crt
+  {%- endif %}
+
   {%- if ssl.prevent_frame is defined and ssl.prevent_frame == True %}
   # Prevent from being loaded into an iframe
   add_header X-Frame-Options SAMEORIGIN;

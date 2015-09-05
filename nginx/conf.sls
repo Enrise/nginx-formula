@@ -11,6 +11,18 @@
 {%- endif %}
 
 ################################################################################
+# Generate DHParam if it doesn't exist
+{%- if salt['pillar.get']('nginx:config:dhparam') %}
+generate_dhparam:
+  cmd.run:
+    - name: "openssl dhparam -out /etc/ssl/private/dhparam_{{ salt['grains.get']('fqdn') }}.crt 4096"
+    - unless: test -f /etc/ssl/private/dhparam_{{ salt['grains.get']('fqdn') }}.crt
+    - watch_in:
+      - service: nginx
+    - require:
+      - pkg: nginx
+{%- endif %}
+################################################################################
 # Manage nginx.conf if configured, otherwise use default
 {%- if salt['pillar.get']('nginx:config:server:config_template') %}
 {{ nginx_map.dirs.config }}/nginx.conf:

@@ -10,6 +10,14 @@ nginx:
     # Install security.conf which adds default security features to NGINX
     security: True
 
+    # Whether to generate DHparam file with 4096 bits for added security
+    dhparam: True
+
+    # Resolvers to use with NGINX for SSL Stapling
+    resolvers:
+      - 8.8.8.8
+      - 8.8.4.4
+
   # Install a placeholder as default vhost
   placeholder:
     install: True
