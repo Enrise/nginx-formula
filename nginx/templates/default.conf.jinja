@@ -29,8 +29,8 @@ server {
   resolver_timeout 10s;
 
   {% if salt['pillar.get']('nginx:config:dhparam') %}
-  # Increase DH Params from default 1024 to 4096
-  ssl_dhparam /etc/ssl/private/dhparam_{{ salt['grains.get']('fqdn') }}.crt
+  # Increase DH Params from default 1024 to 2048
+  ssl_dhparam /etc/ssl/private/dhparam_{{ salt['grains.get']('fqdn') }}.crt;
   {%- endif %}
 
   {%- if ssl.prevent_frame is defined and ssl.prevent_frame == True -%}
