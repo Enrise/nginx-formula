@@ -57,6 +57,8 @@ generate_dhparam:
     - contents: 'include {{ nginx_map.dirs.sites_enabled }}/*;'
     - require:
       - pkg: nginx
+      - file: {{ nginx_map.dirs.sites_enabled }}
+      - file: {{ nginx_map.dirs.sites_available }}
 {%- endif %}
 
 {%- if salt['pillar.get']('nginx:config:security', True) %}
