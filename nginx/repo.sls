@@ -5,7 +5,7 @@
 nginx_repo:
   pkgrepo.managed:
     - humanname: Nginx PPA
-    - name: deb http://nginx.org/packages/ubuntu/ {{ lsb_codename }} nginx
+    - name: deb http://nginx.org/packages/{{ grains['os']|lower }}/ {{ lsb_codename }} nginx
     - dist: {{ lsb_codename }}
     - file: /etc/apt/sources.list.d/nginx.list
     - keyid: 7BD9BF62
