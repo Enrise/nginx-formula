@@ -29,3 +29,8 @@ nginx:
     enable_ssl: True
     ssl_certificate: 'wildcard.example.com.crt'
     ssl_key: 'wildcard.example.com.key'
+
+  # Package specific configuration
+  package:
+    # Use the mainline ('unstable') build of NGINX
+    mainline: False
