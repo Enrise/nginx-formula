@@ -1,24 +1,27 @@
 ## File managed by Salt.
+## Source: {{ source }}
 server {
-  # Listen non-SSL (default '{{ default_server|default(False) }}')
+  # Listen non-SSL (default)
   {%- if listen_ip is defined %}
   {%- set listen_ip = listen_ip ~ ':' %}
   {%- endif %}
-  listen {{ listen_ip|default('') }}{{ listen_port|default('80') }} {{ 'default_server' if default_server|default(False) else '' }};
+  listen {{ listen_ip|default('') }}{{ listen_port|default('80') }}{{ ' default_server' if default_server|default(False) else '' }};
 
   {%- if ssl is defined and ssl is mapping %}
   # Listen on SSL
   {%- if listen_ip_ssl is defined %}
   {%- set listen_ip_ssl = listen_ip_ssl ~ ':' %}
   {%- endif %}
-  listen {{ listen_ip_ssl|default('') }}{{ listen_port_ssl|default('443') }} ssl {{ 'spdy' if ssl.spdy|default(False) else '' }} {{ 'default_server' if default_server|default(False) else '' }};
+  listen {{ listen_ip_ssl|default('') }}{{ listen_port_ssl|default('443') }} ssl{{ ' spdy' if ssl.spdy|default(False) else '' }}{{ ' http2' if ssl.http2|default(False) else '' }}{{ ' default_server' if default_server|default(False) else '' }};
 
   # Enable SSL
   ssl_certificate /etc/ssl/certs/{{ ssl.cert }};
   ssl_certificate_key /etc/ssl/private/{{ ssl.key }};
   ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+  {%- if not ssl.http2|default(False) %}
   ssl_ciphers "AES256+EECDH:AES256+EDH";
   ssl_prefer_server_ciphers on;
+  {%- endif %}
   ssl_session_cache shared:SSL:10m;
   ssl_session_timeout 10m;
 
