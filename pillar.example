@@ -11,7 +11,7 @@ nginx:
     security: True
 
     # Whether to generate DHparam file with 4096 bits for added security
-    dhparam: True
+    dhparam: False
 
     # Resolvers to use with NGINX for SSL Stapling
     resolvers:
@@ -25,7 +25,7 @@ nginx:
     template_type: jinja
     config_template: 'salt://nginx/templates/default.conf.jinja'
 
-    # SSL for placeholder. The certificate/key is not being managed by this formula.
-    enable_ssl: True
-    ssl_certificate: 'wildcard.example.com.crt'
-    ssl_key: 'wildcard.example.com.key'
+  #  # SSL for placeholder. The certificate/key is not being managed by this formula.
+  #  enable_ssl: True
+  #  ssl_certificate: 'wildcard.example.com.crt'
+  #  ssl_key: 'wildcard.example.com.key'
