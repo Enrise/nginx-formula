@@ -19,11 +19,11 @@ nginx:
       - 8.8.4.4
 
   # Install a placeholder as default vhost
-  placeholder:
-    install: True
-    template: 'salt://web/templates/placeholder.html.jinja'
-    template_type: jinja
-    config_template: 'salt://nginx/templates/default.conf.jinja'
+  #placeholder:
+  #  install: True
+  #  template: 'salt://web/templates/placeholder.html.jinja'
+  #  template_type: jinja
+  #  config_template: 'salt://nginx/templates/default.conf.jinja'
 
   #  # SSL for placeholder. The certificate/key is not being managed by this formula.
   #  enable_ssl: True
