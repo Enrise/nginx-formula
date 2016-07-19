@@ -111,6 +111,9 @@ server {
       fastcgi_buffers 4 256k;
       fastcgi_busy_buffers_size 256k;
 
+      # Unset the HTTP_PROXY upstream header to prevent httpoxy
+      fastcgi_param HTTP_PROXY "";
+
       # Include params
       include fastcgi_params;
       {{ fastcgi_params|default([])|join("\n")|indent(3) }}
