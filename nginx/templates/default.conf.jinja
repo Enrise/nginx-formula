@@ -7,7 +7,7 @@ server {
   {%- endif %}
   listen {{ listen_ip|default('') }}{{ listen_port|default('80') }}{{ ' default_server' if default_server|default(False) else '' }};
 
-  {% include './_ssl.jinja' %}
+  {% include 'nginx/templates/_ssl.jinja' %}
 
   # Enable XSS filter in modern webbrowsers
   add_header X-XSS-Protection "1; mode=block";
