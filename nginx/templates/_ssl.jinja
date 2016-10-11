@@ -1,4 +1,4 @@
-{%- if ssl is defined and ssl is mapping %}
+{%- if ssl is defined and ssl is mapping and salt['file.file_exists']('/etc/ssl/certs/' ~ ssl.cert) %}
 # Start SSL support for vhost
 # Listen on SSL
 {%- if listen_ip_ssl is defined %}
@@ -21,7 +21,7 @@ ssl_stapling_verify on;
 resolver {{ salt['pillar.get']('nginx:config:resolvers',['8.8.8.8','8.8.4.4'])|join(' ') }} valid=300s;
 resolver_timeout 10s;
 
-{% if salt['pillar.get']('nginx:config:dhparam') %}
+{%- if salt['pillar.get']('nginx:config:dhparam') %}
 # Increase DH Params from default 1024 to 2048
 ssl_dhparam /etc/ssl/private/dhparam_{{ salt['grains.get']('fqdn') }}.crt;
 {%- endif %}
@@ -48,4 +48,12 @@ add_header Strict-Transport-Security $sts;
 {%- endif %}
 
 # End SSL support for vhost
+{%- endif %}
+
+{%- if ssl is defined and ssl is mapping and ssl.letsencrypt is defined and ssl.letsencrypt == True %}
+# Deal with LetsEncrypt
+location /.well-known/acme-challenge/ {
+    # Serve files from the letsencrypt webroot
+    root /opt/letsencrypt/www;
+}
 {%- endif %}
