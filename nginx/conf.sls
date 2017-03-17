@@ -17,7 +17,7 @@ generate_dhparam:
   cmd.run:
     - name: "openssl dhparam -out /etc/ssl/private/dhparam_{{ salt['grains.get']('fqdn') }}.crt {{ salt['pillar.get']('nginx:config:dhparam_bits', 2048) }}"
     - creates: /etc/ssl/private/dhparam_{{ salt['grains.get']('fqdn') }}.crt
-    - user: root
+    - runas: root
     - watch_in:
       - service: nginx
     - require:
