@@ -20,3 +20,13 @@
 
     {{ ret|json() }}
 {%- endmacro -%}
+
+{%- macro configurable(options, key, default_value) -%}
+{%- if options is not mapping -%}
+{#- The option parameter is not a mapping, returning default value -#}
+{{- default_value -}}
+{%- elif options is defined and options is mapping %}
+{#- The option parameter is a mapping, retrieve the value or return its default -#}
+{{- options.get(key, default_value) -}}
+{%- endif -%}
+{%- endmacro %}

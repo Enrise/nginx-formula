@@ -1,0 +1,34 @@
+{%- if gzip is defined and gzip is mapping %}
+{% from "nginx/lib.sls" import configurable %}
+  # Start configure gzip for vhost
+  gzip {{ 'on' if gzip.enable|default(true) else 'off' }};
+  gzip_http_version {{ configurable(gzip.options, 'http_version', '1.1') }};
+  gzip_comp_level {{ configurable(gzip.options, 'comp_level', '2') }};
+  gzip_min_length {{ configurable(gzip.options, 'min_length', '1100') }};
+  gzip_buffers {{ configurable(gzip.options,'buffers','32 4k|16 8k') }};
+  gzip_proxied {{ configurable(gzip.options, 'proxied', 'any') }};
+  gzip_vary {{ configurable(gzip.options, 'vary', 'off') }};
+  gzip_static {{ configurable(gzip.options, 'static', 'off') }};
+  {% if 'options' in gzip and gzip.options is mapping and 'gzip_disable' in gzip.options -%}
+  {# This key doesn't have a default, therefor only add it when there is an actual value -#}
+  gzip_disable {{ gzip.options.gzip_disable }};
+  {%- endif -%}
+  {# 'types' is a list, therefor cannot be output by configurable -#}
+  {% if 'options' in gzip and gzip.options is mapping and 'types' in gzip.options -%}
+  gzip_types {{ gzip.options.types|join(' ') }};
+  {%- else -%}
+  gzip_types {{ ['text/css',
+    'text/javascript',
+    'text/xml',
+    'text/plain',
+    'text/x-component',
+    'application/javascript',
+    'application/json',
+    'application/xml',
+    'application/rss+xml',
+    'font/truetype',
+    'font/opentype',
+    'application/vnc.ms-fontobject',
+    'image/svg+xml']|join(' ') }};
+  {%- endif -%}
+{%- endif %}
