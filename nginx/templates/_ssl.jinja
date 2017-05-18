@@ -1,78 +1,78 @@
-{%- if ssl is defined and ssl is mapping and salt['file.file_exists']('/etc/ssl/certs/' ~ ssl.cert) %}
-# Start SSL support for vhost
-# Listen on SSL
+{%- if ssl is defined and ssl is mapping and salt['file.file_exists']('/etc/ssl/certs/' ~ ssl.cert) -%}
+  # Start SSL support for vhost
+  # Listen on SSL
 {%- if listen_ip_ssl is defined %}
 {%- set listen_ip_ssl = listen_ip_ssl ~ ':' %}
 {%- endif %}
-listen {{ listen_ip_ssl|default('') }}{{ listen_port_ssl|default('443') }} ssl{{ ' spdy' if ssl.spdy|default(False) else '' }}{{ ' http2' if ssl.http2|default(False) else '' }}{{ ' default_server' if default_server|default(False) else '' }};
+  listen {{ listen_ip_ssl|default('') }}{{ listen_port_ssl|default('443') }} ssl{{ ' spdy' if ssl.spdy|default(False) else '' }}{{ ' http2' if ssl.http2|default(False) else '' }}{{ ' default_server' if default_server|default(False) else '' }};
 
-# Enable SSL
-ssl_certificate /etc/ssl/certs/{{ ssl.cert }};
-ssl_certificate_key /etc/ssl/private/{{ ssl.key }};
-ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-ssl_ciphers EECDH+CHACHA20:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:EECDH+3DES:RSA+3DES:!MD5;
-ssl_prefer_server_ciphers on;
-ssl_session_cache shared:SSL:10m;
-ssl_session_timeout 10m;
+  # Enable SSL
+  ssl_certificate /etc/ssl/certs/{{ ssl.cert }};
+  ssl_certificate_key /etc/ssl/private/{{ ssl.key }};
+  ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+  ssl_ciphers EECDH+CHACHA20:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:EECDH+3DES:RSA+3DES:!MD5;
+  ssl_prefer_server_ciphers on;
+  ssl_session_cache shared:SSL:10m;
+  ssl_session_timeout 10m;
 
-# SSL Stapling
-ssl_stapling on;
-ssl_stapling_verify on;
-resolver {{ salt['pillar.get']('nginx:config:resolvers',['8.8.8.8','8.8.4.4'])|join(' ') }} valid=300s;
-resolver_timeout 10s;
+  # SSL Stapling
+  ssl_stapling on;
+  ssl_stapling_verify on;
+  resolver {{ salt['pillar.get']('nginx:config:resolvers',['8.8.8.8','8.8.4.4'])|join(' ') }} valid=300s;
+  resolver_timeout 10s;
 
 {%- if salt['pillar.get']('nginx:config:dhparam') %}
-# Increase DH Params from default 1024 to 2048
-ssl_dhparam /etc/ssl/private/dhparam_{{ salt['grains.get']('fqdn') }}.crt;
+  # Increase DH Params from default 1024 to 2048
+  ssl_dhparam /etc/ssl/private/dhparam_{{ salt['grains.get']('fqdn') }}.crt;
 {%- endif %}
 
 {%- if ssl.prevent_frame is defined and ssl.prevent_frame == True -%}
-# Prevent from being loaded into an iframe
-add_header X-Frame-Options SAMEORIGIN;
-add_header X-Content-Type-Options nosniff;
+  # Prevent from being loaded into an iframe
+  add_header X-Frame-Options SAMEORIGIN;
+  add_header X-Content-Type-Options nosniff;
 {%- endif %}
 
 {%- if ssl.forward is defined and ssl.forward == True %}
-# Force redirect Non-SSL requests to SSL
-if ($scheme = http) {
-    return 301 https://{{ domain }}:{{ redirect_port_ssl|default(listen_port_ssl|default('443')) }}$request_uri;
-}
+  # Force redirect Non-SSL requests to SSL
+  if ($scheme = http) {
+      return 301 https://{{ domain }}:{{ redirect_port_ssl|default(listen_port_ssl|default('443')) }}$request_uri;
+  }
 {%- endif %}
 
 {%- if ssl.enable_sts is defined and ssl.enable_sts == True %}
-set $sts "";
-if ($server_port = {{ listen_port_ssl|default('443') }}) {
-    set $sts "max-age=31536000;";
-}
-add_header Strict-Transport-Security $sts;
+  set $sts "";
+  if ($server_port = {{ listen_port_ssl|default('443') }}) {
+      set $sts "max-age=31536000;";
+  }
+  add_header Strict-Transport-Security $sts;
 {%- endif %}
 
-# End SSL support for vhost
+  # End SSL support for vhost
 {%- endif %}
 
 {%- if ssl is defined and ssl is mapping and ssl.letsencrypt is defined and ssl.letsencrypt == True %}
-# Rule for legitimate ACME Challenge requests (like /.well-known/acme-challenge/xxxxxxxxx)
-# We use ^~ here, so that we don't check other regexes (for speed-up). We actually MUST cancel
-# other regex checks, because in our other config files have regex rule that denies access to files with dotted names.
-location ^~ /.well-known/acme-challenge/ {
-    # Set correct content type. According to this:
-    # https://community.letsencrypt.org/t/using-the-webroot-domain-verification-method/1445/29
-    # Current specification requires "text/plain" or no content header at all.
-    # It seems that "text/plain" is a safe option.
-    default_type "text/plain";
+  # Rule for legitimate ACME Challenge requests (like /.well-known/acme-challenge/xxxxxxxxx)
+  # We use ^~ here, so that we don't check other regexes (for speed-up). We actually MUST cancel
+  # other regex checks, because in our other config files have regex rule that denies access to files with dotted names.
+  location ^~ /.well-known/acme-challenge/ {
+      # Set correct content type. According to this:
+      # https://community.letsencrypt.org/t/using-the-webroot-domain-verification-method/1445/29
+      # Current specification requires "text/plain" or no content header at all.
+      # It seems that "text/plain" is a safe option.
+      default_type "text/plain";
 
-    # This directory must be the same as in /etc/letsencrypt/cli.ini
-    # as "webroot-path" parameter. Also don't forget to set "authenticator" parameter
-    # there to "webroot".
-    # Do NOT use alias, use root! Target directory is located here:
-    # /opt/letsencrypt/www/.well-known/acme-challenge/
-    root /opt/letsencrypt/www;
-}
+      # This directory must be the same as in /etc/letsencrypt/cli.ini
+      # as "webroot-path" parameter. Also don't forget to set "authenticator" parameter
+      # there to "webroot".
+      # Do NOT use alias, use root! Target directory is located here:
+      # /opt/letsencrypt/www/.well-known/acme-challenge/
+      root /opt/letsencrypt/www;
+  }
 
-# Hide /acme-challenge subdirectory and return 404 on all requests.
-# It is somewhat more secure than letting Nginx return 403.
-# Ending slash is important!
-location = /.well-known/acme-challenge/ {
-    return 404;
-}
-{%- endif %}
+  # Hide /acme-challenge subdirectory and return 404 on all requests.
+  # It is somewhat more secure than letting Nginx return 403.
+  # Ending slash is important!
+  location = /.well-known/acme-challenge/ {
+      return 404;
+  }
+{%- endif -%}
