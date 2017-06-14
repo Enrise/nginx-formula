@@ -67,6 +67,10 @@
       # Do NOT use alias, use root! Target directory is located here:
       # /opt/letsencrypt/www/.well-known/acme-challenge/
       root /opt/letsencrypt/www;
+
+      # We need to explicitly allow *all* traffic to this location, even if the / location  is
+      # password and/or IP protected otherwise LetsEncrypt will get a 401 error while checking the acme-challenge.
+      allow all;
   }
 
   # Hide /acme-challenge subdirectory and return 404 on all requests.
