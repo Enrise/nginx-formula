@@ -6,6 +6,14 @@
   # Needs to exist and be writable by nginx.  Use tmpfs for best performance.
   pagespeed FileCachePath {{ pagespeed.file_cache_path|default('/var/ngx_pagespeed_cache') }};
 
+  {%- if 'config' in pagespeed and pagespeed.config is mapping %}
+  # Start extra pagespeed configuration
+  {%- for key, value in pagespeed.config.items() %}
+  pagespeed {{ key }} {{ value}};
+  {%- endfor %}
+  # End extra pagespeed configuration
+  {%- endif %}
+
   # Ensure requests for pagespeed optimized resources go to the pagespeed handler
   # and no extraneous headers get set.
   location ~ "\.pagespeed\.([a-z]\.)?[a-z]{2}\.[^.]{10}\.[^.]+" {
