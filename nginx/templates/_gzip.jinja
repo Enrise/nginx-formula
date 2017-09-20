@@ -5,7 +5,7 @@
   gzip_http_version {{ configurable(gzip.options, 'http_version', '1.1') }};
   gzip_comp_level {{ configurable(gzip.options, 'comp_level', '2') }};
   gzip_min_length {{ configurable(gzip.options, 'min_length', '1100') }};
-  gzip_buffers {{ configurable(gzip.options,'buffers','32 4k|16 8k') }};
+  gzip_buffers {{ configurable(gzip.options,'buffers','32 4k') }};
   gzip_proxied {{ configurable(gzip.options, 'proxied', 'any') }};
   gzip_vary {{ configurable(gzip.options, 'vary', 'off') }};
   gzip_static {{ configurable(gzip.options, 'static', 'off') }};
