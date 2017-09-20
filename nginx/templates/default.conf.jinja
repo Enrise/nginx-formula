@@ -9,6 +9,7 @@ server {
 
   {%- include 'nginx/templates/_ssl.jinja' %}
   {%- include 'nginx/templates/_gzip.jinja' %}
+  {%- include 'nginx/templates/_pagespeed.jinja' %}  
 
   # Enable XSS filter in modern webbrowsers
   add_header X-XSS-Protection "1; mode=block";
@@ -32,6 +33,7 @@ server {
 
   location / {
       try_files {{ try_files|default('$uri $uri/ /index.php?$args') }};
+      {{ extra_location_config|default([])|join("\n")|indent(4) }}
   }
 
   {%- if logdir is defined %}
