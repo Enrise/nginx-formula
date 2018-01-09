@@ -10,6 +10,8 @@ server {
   {% include 'nginx/templates/_ssl.jinja' %}
 
   server_name {{ domain }} www.{{ domain }} {{ aliases|default([])|join(" ") -}};
+
+  {{- before_location_config|default([])|join("\n")|indent(2) }}
   location / {
 {%- if limit_ips is defined %}
     # Only allow access from given IP/IP's or subnets.
@@ -30,6 +32,7 @@ server {
     proxy_set_header        X-Real-IP       $remote_addr;
     proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
     {{ proxy_params|default([])|join("\n")|indent(3) }}
+    {{- extra_location_config|default([])|join("\n")|indent(3) }}
   }
 
   {{ extra_config|default([])|join("\n")|indent(2) }}
