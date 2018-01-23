@@ -31,11 +31,11 @@ server {
   root {{ webroot }};
   server_name {{ domain }} www.{{ domain }} {{ aliases|default([])|join(" ") }};
 
-  {{- before_location_config|default([])|join("\n")|indent(2) }}
+  {{ before_location_config|default([])|join("\n")|indent(2) }}
 
   location / {
       try_files {{ try_files|default('$uri $uri/ /index.php?$args') }};
-      {{- extra_location_config|default([])|join("\n")|indent(4) }}
+      {{ extra_location_config|default([])|join("\n")|indent(4) }}
   }
 
   {%- if logdir is defined %}
