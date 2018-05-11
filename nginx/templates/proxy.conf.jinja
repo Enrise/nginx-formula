@@ -9,6 +9,19 @@ server {
 
   {% include 'nginx/templates/_ssl.jinja' %}
 
+  {%- if redirect_to_www is defined and redirect_to_www == True %}
+  # non-www to www redirect
+  if ($http_host !~* ^www\.)
+  {
+  	return 301 $scheme://www.{{ domain }}$request_uri;
+  }
+  {% elif redirect_from_www is defined and redirect_from_www == True %}
+  # www to non-www redirect
+  if ($http_host ~* "^www\.(.+)$"){
+    return 301 $scheme://{{ domain }}$request_uri;
+  }
+  {%- endif %}
+
   server_name {{ domain }} www.{{ domain }} {{ aliases|default([])|join(" ") -}};
 
   {{- before_location_config|default([])|join("\n")|indent(2) }}
