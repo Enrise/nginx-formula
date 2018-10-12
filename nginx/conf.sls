@@ -111,3 +111,13 @@ install_placeholder:
 {%- endif %}
 
 {%- endif %}
+
+{%- if salt['pillar.get']('nginx:config:extra_config', [])|length > 0 %}
+{{ nginx_map.dirs.config }}/conf.d/extra_config.conf:
+  file.managed:
+    - contents_pillar: nginx:config:extra_config
+    - require:
+      - pkg: nginx
+    - watch_in:
+      - service: nginx    
+{%- endif %}

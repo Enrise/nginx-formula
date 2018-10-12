@@ -18,6 +18,15 @@ nginx:
       - 8.8.8.8
       - 8.8.4.4
 
+    # Extra configs to add to nginx
+    extra_config:
+      - '# Increase resolver timeout'
+      - 'resolver_timeout 35s;'
+      - |
+        # Allow bigger URI paths and headers
+        client_header_buffer_size 128k;
+        large_client_header_buffers 16 1024k;
+
   # Install a placeholder as default vhost
   #placeholder:
   #  install: True
