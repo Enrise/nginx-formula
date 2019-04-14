@@ -7,12 +7,12 @@ nginx_repo:
   pkgrepo.managed:
     - humanname: Nginx PPA
     {%- if mainline == True %}
-    - name: deb [arch=amd64] http://nginx.org/packages/mainline/{{ grains['os']|lower }}/ {{ lsb_codename }} nginx
+    - name: deb [arch=amd64] https://nginx.org/packages/mainline/{{ grains['os']|lower }}/ {{ lsb_codename }} nginx
     {%- else %}
-    - name: deb [arch=amd64] http://nginx.org/packages/{{ grains['os']|lower }}/ {{ lsb_codename }} nginx
+    - name: deb [arch=amd64] https://nginx.org/packages/{{ grains['os']|lower }}/ {{ lsb_codename }} nginx
     {%- endif %}
     - dist: {{ lsb_codename }}
     - file: /etc/apt/sources.list.d/nginx.list
-    - key_url: http://nginx.org/keys/nginx_signing.key
+    - key_url: https://nginx.org/keys/nginx_signing.key
     - require_in:
       - pkg: nginx
