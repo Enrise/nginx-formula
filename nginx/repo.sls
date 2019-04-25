@@ -13,6 +13,7 @@ nginx_repo:
     {%- endif %}
     - dist: {{ lsb_codename }}
     - file: /etc/apt/sources.list.d/nginx.list
+    - clean_file: True
     - key_url: https://nginx.org/keys/nginx_signing.key
     - require_in:
       - pkg: nginx
