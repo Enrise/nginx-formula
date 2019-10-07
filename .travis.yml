@@ -13,16 +13,16 @@ env:
 matrix:
   include:
     - python: 2.7
-      env: PYTHONVERSION="python2.7 SALT_ARGS="-l debug --local --retcode-passthrough --pillar-root=.salt/pillar/stable --file-root=$PWD"
+      env: PYTHONVERSION=python2.7 SALT_ARGS="-l debug --local --retcode-passthrough --pillar-root=.salt/pillar/stable --file-root=$PWD"
     - python: 2.7
-      env: PYTHONVERSION="python2.7 SALT_ARGS="-l debug --local --retcode-passthrough --pillar-root=.salt/pillar/mainline --file-root=$PWD"
+      env: PYTHONVERSION=python2.7 SALT_ARGS="-l debug --local --retcode-passthrough --pillar-root=.salt/pillar/mainline --file-root=$PWD"
     - python: 3.7
-      env: PYTHONVERSION="python3.7 SALT_ARGS="-l debug --local --retcode-passthrough --pillar-root=.salt/pillar/stable --file-root=$PWD"
+      env: PYTHONVERSION=python3.7 SALT_ARGS="-l debug --local --retcode-passthrough --pillar-root=.salt/pillar/stable --file-root=$PWD"
     - python: 3.7
-      env: PYTHONVERSION="python3.7 SALT_ARGS="-l debug --local --retcode-passthrough --pillar-root=.salt/pillar/mainline --file-root=$PWD"
+      env: PYTHONVERSION=python3.7 SALT_ARGS="-l debug --local --retcode-passthrough --pillar-root=.salt/pillar/mainline --file-root=$PWD"
   allow_failures:
-    - env: PYTHONVERSION="python2.7 SALT_ARGS="-l debug --local --retcode-passthrough --pillar-root=.salt/pillar/mainline --file-root=$PWD"
-    - env: PYTHONVERSION="python3.7 SALT_ARGS="-l debug --local --retcode-passthrough --pillar-root=.salt/pillar/mainline --file-root=$PWD"
+    - env: PYTHONVERSION=python2.7 SALT_ARGS="-l debug --local --retcode-passthrough --pillar-root=.salt/pillar/mainline --file-root=$PWD"
+    - env: PYTHONVERSION=python3.7 SALT_ARGS="-l debug --local --retcode-passthrough --pillar-root=.salt/pillar/mainline --file-root=$PWD"
 
 before_install:
   - sudo apt-get update
