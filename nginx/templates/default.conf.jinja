@@ -35,7 +35,7 @@ server {
 
   location / {
       try_files {{ try_files|default('$uri $uri/ /index.php?$args') }};
-      {{ extra_location_config|default([])|join("\n")|indent(4) }}
+      {{ extra_location_config|default([])|join("\n")|indent(6) }}
   }
 
   {%- if logdir is defined %}
