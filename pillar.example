@@ -25,17 +25,17 @@ nginx:
         - TLSv1.2
         - TLSv1.3
 
-       # Specifies the enabled ciphers. The ciphers are specified in the format understood by the OpenSSL library.
-       ciphers: "EECDH+CHACHA20:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:EECDH+3DES:RSA+3DES:!MD5"
+      # Specifies the enabled ciphers. The ciphers are specified in the format understood by the OpenSSL library.
+      ciphers: "EECDH+CHACHA20:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:EECDH+3DES:RSA+3DES:!MD5"
 
-       # Specifies that server ciphers should be preferred over client ciphers when using the SSLv3 and TLS protocols.
-       prefer_server_ciphers: "on"
+      # Specifies that server ciphers should be preferred over client ciphers when using the SSLv3 and TLS protocols.
+      prefer_server_ciphers: "on"
 
-       # Sets the types and sizes of caches that store session parameters.
-       session_cache: "shared:SSL:10m"
+      # Sets the types and sizes of caches that store session parameters.
+      session_cache: "shared:SSL:10m"
 
-       # Specifies a time during which a client may reuse the session parameters.
-       session_timeout: "10m"
+      # Specifies a time during which a client may reuse the session parameters.
+      session_timeout: "10m"
 
     # Extra configs to add to nginx
     extra_config:
