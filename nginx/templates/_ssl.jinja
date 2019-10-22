@@ -1,5 +1,5 @@
-{%- nginx_config = salt['pillar.get']('nginx:config', {}) %}
-{%- nginx_ssl_config = nginx_config.get('ssl', {}) %}
+{%- set nginx_config = salt['pillar.get']('nginx:config', {}) %}
+{%- set nginx_ssl_config = nginx_config.get('ssl', {}) %}
 {%- if ssl is defined and ssl is mapping and salt['file.file_exists']('/etc/ssl/certs/' ~ ssl.cert) -%}
   # Start SSL support for vhost
   # Listen on SSL
